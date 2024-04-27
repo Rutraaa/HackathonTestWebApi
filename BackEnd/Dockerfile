@@ -1,16 +1,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /app
+WORKDIR /BackEnd/app/
 
 # Copy your application files (csproj and source code)
 COPY *.csproj ./
 COPY . .
-
 # Restore dependencies and publish for deployment
-RUN dotnet restore && dotnet publish -c Release -o /app/publish
+RUN dotnet restore ./BackEnd/BackEnd.csproj && dotnet publish ./BackEnd/BackEnd.csproj -c Release -o /app/publish
+
 
 # Stage 2: Final image (slim runtime)
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS final
-WORKDIR /app
+WORKDIR /BackEnd/app/
 
 # Copy the published output from the previous stage
 COPY --from=build /app/publish .
