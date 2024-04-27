@@ -6,9 +6,9 @@ namespace BackApi.Repo;
 [Table("category")]
 public class Category : BaseModel
 {
-    [PrimaryKey("Id")]
+    [PrimaryKey("id", false)]
     public int Id { get; set; }
 
-    [Column("Name")]
+    [Column("name")]
     public string Name { get; set; }
 }

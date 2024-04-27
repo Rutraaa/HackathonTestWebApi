@@ -6,27 +6,27 @@ namespace BackApi.Repo;
 [Table("consumer")]
 public class Consumer : BaseModel
 {
-    [PrimaryKey("Id")]
+    [PrimaryKey("id", false)]
     public int Id { get; set; }
 
-    [Column("CreateDate")]
+    [Column("created_date")]
     public DateTime CreateDate { get; set; }
 
-    [Column("UpdateDate")]
+    [Column("update_date")]
     public DateTime UpdateDate { get; set; }
 
-    [Column("FirstName")]
+    [Column("first_name")]
     public string FirstName { get; set; }
 
-    [Column("LastName")]
+    [Column("last_name")]
     public string LastName { get; set; }
 
-    [Column("Phone")]
+    [Column("phone")]
     public string Phone { get; set; }
 
-    [Column("Email")]
+    [Column("email")]
     public string Email { get; set; }
 
-    [Column("Password")]
+    [Column("password")]
     public string Password { get; set; }
 }

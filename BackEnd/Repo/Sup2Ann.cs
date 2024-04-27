@@ -7,12 +7,12 @@ namespace BackApi.Repo;
 public class Sup2Ann : BaseModel
 {
 
-    [PrimaryKey("Id")]
+    [PrimaryKey("Id", false)]
     public int Id { get; set; }
 
-    [Column("AnnouncementId")]
+    [Column("announcement_id")]
     public int AnnouncementId { get; set; }
 
-    [Column("SupplierId")]
+    [Column("supplie_id")]
     public int SupplierId { get; set; }
 }
