@@ -1,4 +1,6 @@
-﻿namespace BackEnd.DTO
+﻿using BackApi.DataTypes;
+
+namespace BackEnd.DTO
 {
     public class AnnouncementDTO
     {
@@ -9,5 +11,6 @@
         public string Subtitle { get; set; }
         public string Description { get; set; }
         public List<string> Tags { get; set; }
+        public AnnouncementStatus Status { get; set; }
     }
 }
