@@ -5,6 +5,17 @@ using Supabase;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
+
 //Connection to supabase
 SupaBaseConnection supaBase = builder.Configuration.GetSection("SupaBaseConnection").Get<SupaBaseConnection>();
 var options = new SupabaseOptions
@@ -30,7 +41,7 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseCors();
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
