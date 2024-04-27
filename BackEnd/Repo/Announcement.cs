@@ -7,7 +7,7 @@ namespace BackApi.Repo;
 [Table("announcement_duplicate")]
 public class Announcement: BaseModel
 {
-    [PrimaryKey("id")]
+    [PrimaryKey("id", false)]
     public int Id { get; set; }
 
     [Column("consumer_id")]
@@ -30,4 +30,8 @@ public class Announcement: BaseModel
 
     [Column("status")]
     public AnnouncementStatus Status { get; set; }
+    [Column("created_date")]
+    public DateTime CreatedDate { get; set; }
+
+
 }

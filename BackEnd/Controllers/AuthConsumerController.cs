@@ -37,8 +37,8 @@ namespace BackApi.Controllers
 
                 await _supaBaseClient.From<Consumer>().Insert(new Consumer
                 {
-                    CreateDate = request.CreateDate,
-                    UpdateDate = request.UpdateDate,
+                    CreateDate = DateTime.Now,
+                    UpdateDate = DateTime.Now,
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                     Phone = request.Phone,
