@@ -1,6 +1,6 @@
 using BackApi.DataTypes;
 using BackApi.Repo;
-using BackEnd.Repo;
+using BackEnd.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Supabase;
@@ -26,7 +26,7 @@ namespace BackApi.Controllers
             var response = await _supaBaseClient.From<Announcement>().Get();
             
             var announcementString = response.Content;
-            var announcement = JsonConvert.DeserializeObject<List<AnnouncementObj>>(announcementString);
+            var announcement = JsonConvert.DeserializeObject<List<AnnouncementDTO>>(announcementString);
 
             return Ok(announcement);
         }
