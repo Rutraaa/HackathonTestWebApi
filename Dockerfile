@@ -29,4 +29,4 @@ COPY --from=publish /app/publish .
 EXPOSE 80
 
 # Entry point for the application
-ENTRYPOINT ["dotnet", "BackApi.dll"]
+ENTRYPOINT ["dotnet", "BackEnd.dll"]
