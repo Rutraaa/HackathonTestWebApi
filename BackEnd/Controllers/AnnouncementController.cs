@@ -37,8 +37,9 @@ namespace BackApi.Controllers
         [HttpGet("/list")]
         public async Task<IActionResult> GetAnnouncementList()
         {
-            if (!(await IsAuthorized(_supaBaseConnection.Session))) return Unauthorized("not authorized");
-
+            if (!await IsAuthorized(_supaBaseConnection.Session))
+                return Unauthorized("not authorized");
+            
             var response = await _supaBaseClient.From<Announcement>().Get();
 
             var announcementsString = response.Content;

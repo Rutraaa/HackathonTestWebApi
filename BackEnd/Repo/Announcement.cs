@@ -4,7 +4,7 @@ using Supabase.Postgrest.Models;
 
 namespace BackApi.Repo;
 
-[Table("announcement_duplicate")]
+[Table("announcement")]
 public class Announcement: BaseModel
 {
     [PrimaryKey("id", false)]
