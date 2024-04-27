@@ -26,9 +26,9 @@ namespace BackApi.Controllers
 
         private async Task<bool> IsAuthorized(Session session)
         {
-            if (_supaBaseConnection.Session != null)
+            if (session != null)
             {
-                await _supaBaseClient.Auth.SetSession(_supaBaseConnection.Session.AccessToken, _supaBaseConnection.Session.RefreshToken, false);
+                await _supaBaseClient.Auth.SetSession(session.AccessToken, session.RefreshToken, false);
                 return true;
             }
             return false;
@@ -38,7 +38,7 @@ namespace BackApi.Controllers
         public async Task<IActionResult> GetAnnouncementList()
         {
             if (!await IsAuthorized(_supaBaseConnection.Session))
-                return Unauthorized("not authorized");
+                return Unauthorized("Not authorized user");
             
             var response = await _supaBaseClient.From<Announcement>().Get();
 
