@@ -1,6 +1,8 @@
 using BackApi.DataTypes;
 using BackApi.Repo;
+using BackEnd.Repo;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Supabase;
 
 namespace BackApi.Controllers
@@ -21,18 +23,12 @@ namespace BackApi.Controllers
         [HttpGet("/list")]
         public async Task<IActionResult> GetAnnouncementList()
         {
-           var response  = await _supaBaseClient.From<Announcement>().Get();
-           List<Announcement> listResult = response.Models.Select(item => new Announcement
-           {
-               ConsumerId = item.ConsumerId,
-               CategoryId = item.CategoryId,
-               Title = item.Title,
-               Subtitle = item.Subtitle,
-               Description = item.Description,
-               Tags = item.Tags,
-               Status = item.Status
-           }).ToList();
-           return Ok(listResult);
+            var response = await _supaBaseClient.From<Announcement>().Get();
+            
+            var announcementString = response.Content;
+            var announcement = JsonConvert.DeserializeObject<List<AnnouncementObj>>(announcementString);
+
+            return Ok(announcement);
         }
     }
 }
