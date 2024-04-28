@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using BackApi.DataTypes;
 using BackEnd;
 using BackEnd.Contracts.Assigning;
 using BackEnd.Repo;
@@ -36,7 +37,7 @@ namespace BackApi.Controllers
         }
 
         [HttpPost("/assign-supplier")]
-        public async Task<IActionResult> GetCategoryList(AssigningRequest request)
+        public async Task<IActionResult> GetCategoryList([FromBody] AssigningRequest request)
         {
             try
             {
@@ -61,6 +62,24 @@ namespace BackApi.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        [HttpPut("/update-status")]
+        public async Task<IActionResult> UpdateAnnouncement([FromBody] UpdateAnnouncementStatusRequest request)
+        {
+            if (!await IsAuthorized(_supaBaseConnection.Session))
+                return Unauthorized("Not authorized user");
+
+            var model = await _supaBaseClient
+                .From<Announcement>()
+                .Where(task => task.Id == request.AnnouncementId)
+                .Single();
+
+            model.Status = (AnnouncementStatus)request.Status;
+
+            await model.Update<Announcement>();
+
+            return Ok();
         }
     }
 }

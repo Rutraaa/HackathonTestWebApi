@@ -77,7 +77,35 @@ namespace BackApi.Controllers
                     return NotFound();
                 }
                 _supaBaseConnection.Session = session;
-                return Ok(session.AccessToken);
+
+                if (request.IsSupllier)
+                {
+                    var model = await _supaBaseClient
+                        .From<Supplier>()
+                        .Where(task => task.Email == request.Email)
+                        .Single();
+
+                    return Ok(new AccessInfoResponse
+                    {
+                        AccessToken = session.AccessToken,
+                        UserId = model.Id,
+                        IsSupllier = request.IsSupllier
+                    });
+                }
+                else
+                {
+                    var model = await _supaBaseClient
+                        .From<Consumer>()
+                        .Where(task => task.Email == request.Email)
+                        .Single();
+
+                    return Ok(new AccessInfoResponse
+                    {
+                        AccessToken = session.AccessToken,
+                        UserId = model.Id,
+                        IsSupllier = request.IsSupllier
+                    });
+                }
             }
             catch (Exception)
             {
@@ -85,7 +113,7 @@ namespace BackApi.Controllers
             }
         }
 
-        [HttpGet("/logout")]
+        [HttpGet("/sighout")]
         public async Task<IActionResult> LogOut()
         {
             try
