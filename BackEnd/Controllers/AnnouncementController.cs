@@ -34,8 +34,8 @@ namespace BackApi.Controllers
             return false;
         }
 
-        [HttpGet("/list")]
-        public async Task<IActionResult> GetAnnouncementList()
+        [HttpGet("/announcements/all")]
+        public async Task<IActionResult> GetAnnouncementAll()
         {
             if (!await IsAuthorized(_supaBaseConnection.Session))
                 return Unauthorized("Not authorized user");
@@ -45,7 +45,38 @@ namespace BackApi.Controllers
             var announcementsString = response.Content;
 
             var announcements = JsonConvert.DeserializeObject<List<AnnouncementDTO>>(announcementsString);
+
             return Ok(announcements);
+        }
+
+        [HttpPost("/announcements/list")]
+        public async Task<IActionResult> GetAnnouncementPaginationList([FromBody] GetAnnouncementRequest request)
+        {
+            if (!await IsAuthorized(_supaBaseConnection.Session))
+                return Unauthorized("Not authorized user");
+
+            int offset = (request.currentPage - 1) * request.pageSize;
+
+            var countResponse = await _supaBaseClient.From<Announcement>().Get();
+            int totalCount = countResponse.Models.ToList().Count();
+
+            var response = await _supaBaseClient
+                .From<Announcement>()
+                .Range(offset, offset + request.pageSize - 1)
+                .Get();
+
+            var announcementsString = response.Content;
+            var announcements = JsonConvert.DeserializeObject<List<AnnouncementDTO>>(announcementsString);
+
+            var result = new GetAnnouncementResponse
+            {
+                items = announcements,
+                totalCount = totalCount,
+                pageNumber = request.currentPage,
+                pageSize = request.pageSize
+            };
+
+            return Ok(result);
         }
 
         [HttpGet("/announcements/{id}")]
