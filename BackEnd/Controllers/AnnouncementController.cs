@@ -1,4 +1,4 @@
-using BackApi.Repo;
+using BackEnd.Repo;
 using BackEnd.Contracts.Announcement;
 using BackEnd.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using Supabase.Gotrue;
 using Client = Supabase.Client;
 using BackApi.SupaBaseContext;
+using Supabase.Postgrest;
+using BackEnd.Services;
 
 namespace BackApi.Controllers
 {
@@ -16,12 +18,14 @@ namespace BackApi.Controllers
         private readonly ILogger<Announcement> _logger;
         private Client _supaBaseClient;
         private SupaBaseConnection _supaBaseConnection;
+        private readonly RequestFilltering _requestFilltering;
 
-        public AnnouncementController(ILogger<Announcement> logger, Client supaBaseClient, SupaBaseConnection supaBaseConnection)
+        public AnnouncementController(ILogger<Announcement> logger, Client supaBaseClient, SupaBaseConnection supaBaseConnection, RequestFilltering requestFilltering)
         {
             _logger = logger;
             _supaBaseConnection = supaBaseConnection;
             _supaBaseClient = supaBaseClient;
+            _requestFilltering = requestFilltering;
         }
 
         private async Task<bool> IsAuthorized(Session session)
@@ -39,11 +43,10 @@ namespace BackApi.Controllers
         {
             if (!await IsAuthorized(_supaBaseConnection.Session))
                 return Unauthorized("Not authorized user");
-            
+
             var response = await _supaBaseClient.From<Announcement>().Get();
 
             var announcementsString = response.Content;
-
             var announcements = JsonConvert.DeserializeObject<List<AnnouncementDTO>>(announcementsString);
 
             return Ok(announcements);
@@ -55,22 +58,17 @@ namespace BackApi.Controllers
             if (!await IsAuthorized(_supaBaseConnection.Session))
                 return Unauthorized("Not authorized user");
 
+            var baseQuery = await _requestFilltering.GetSearchShceme(request.CategoryId, request.SearchString, _supaBaseClient);
+
             int offset = (request.currentPage - 1) * request.pageSize;
 
-            var countResponse = await _supaBaseClient.From<Announcement>().Get();
-            int totalCount = countResponse.Models.ToList().Count();
+            int totalCount = baseQuery.Count;
 
-            var response = await _supaBaseClient
-                .From<Announcement>()
-                .Range(offset, offset + request.pageSize - 1)
-                .Get();
-
-            var announcementsString = response.Content;
-            var announcements = JsonConvert.DeserializeObject<List<AnnouncementDTO>>(announcementsString);
+            baseQuery = baseQuery.Skip(offset).Take(offset + request.pageSize - 1).ToList();
 
             var result = new GetAnnouncementResponse
             {
-                items = announcements,
+                items = baseQuery,
                 totalCount = totalCount,
                 pageNumber = request.currentPage,
                 pageSize = request.pageSize
