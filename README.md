@@ -64,62 +64,17 @@ For convenient work with the controllers, a folder structure has been added to s
 
 The `AnnouncementController` manages `Announcement` objects in our web application. It provides various endpoints to handle creating, retrieving and updating announcements. The controller uses several dependencies and services to interact with Supabase and manage data efficiently.
 
-### Constructor
-
-The `AnnouncementController` is initialized with the following dependencies:
-
-- `ILogger<Announcement>`: Logger for logging operations and errors.
-- `Client`: Supabase client for database interactions.
-- `SupaBaseConnection`: Manages authentication and authorization sessions.
-- `RequestFilltering`: Handles filtering and search schemes for announcements.
-
 Authorization
 
 The controller includes an authorization method `IsAuthorized` that checks if the user is authorized using a session from `SupaBaseConnection`. If the user is not authorized, the controller returns an unauthorized response.
-
-### Endpoints
-
-- **`[HttpGet("/announcements/all")]`**: Retrieves all announcements. Requires user authorization.
-- **`[HttpPost("/announcements/list")]`**: Retrieves a paginated list of announcements based on filters provided in the request. Requires user authorization.
-- **`[HttpGet("/announcements/{id}")]`**: Retrieves an announcement by its ID. Requires user authorization.
-- **`[HttpPost("/announcement/create")]`**: Creates a new announcement with the provided data in the request. Requires user authorization.
-- **`[HttpPut("/announcement/update/{id}")]`**: Updates an existing announcement with the provided data in the request and ID. Requires user authorization.
 
 ## AuthConsumerController
 
 The `AuthConsumerController` handles authentication and authorization for users seeking help. It provides endpoints for user sign-up and sign-in, and utilizes several services for secure and efficient operations.
 
-### Constructor
-
-The `AuthConsumerController` is initialized with the following dependencies:
-
-- `HashService`: Provides hashing capabilities for secure password storage.
-- `Client`: Supabase client for database interactions.
-- `SupaBaseConnection`: Manages authentication and authorization sessions.
-
-### Endpoints
-
-- **`[HttpPost("/consumer/signUp")]`**: Handles user sign-up. Accepts a `CreatingConsumerRequest` object containing user information such as email, password, and other personal details. If the user is successfully signed up, their data is inserted into the `Consumer` table, and the method returns `Ok`. If there is an error (e.g., the email already exists), the method returns `NotFound`.
-
-- **`[HttpPost("/consumer/signIn")]`**: Handles user sign-in. Accepts a `SignInConsumerRequest` object containing the user's email and password. If the sign-in is successful, the method sets the user's session in `SupaBaseConnection` and returns the access token. If there is an error (e.g., invalid login credentials), the method returns `NotFound`.
-
 ## AuthSupplierController
 
 The `AuthSupplierController` manages authentication and authorization for users offering help. It provides endpoints for user sign-up and sign-in and uses various services for secure and efficient operations.
-
-### Constructor
-
-The `AuthSupplierController` is initialized with the following dependencies:
-
-- `HashService`: Provides hashing capabilities for secure password storage.
-- `Client`: Supabase client for database interactions.
-- `SupaBaseConnection`: Manages authentication and authorization sessions.
-
-### Endpoints
-
-- **`[HttpPost("/supplier/signUp")]`**: Handles user sign-up for suppliers. Accepts a `CreatingSupplierRequest` object containing user information such as email, password, and other personal details. If the user is successfully signed up, their data is inserted into the `Supplier` table, and the method returns `Ok`. If there is an error (e.g., the email already exists), the method returns `NotFound`.
-
-- **`[HttpPost("/supplier/signIn")]`**: Handles user sign-in for suppliers. Accepts a `SignInSupplierRequest` object containing the user's email and password. If the sign-in is successful, the method sets the user's session in `SupaBaseConnection` and returns the access token. If there is an error (e.g., invalid login credentials), the method returns `NotFound`.
 
 ## System Requirements
 
