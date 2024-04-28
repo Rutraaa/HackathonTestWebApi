@@ -33,6 +33,7 @@ builder.Services.AddScoped(_ => new Client(supaBase.SupaBaseUrl, supaBase.SupaBa
 
 
 builder.Services.AddSingleton<HashService>();
+builder.Services.AddSingleton<RequestFilltering>();
 
 // Add services to the container
 builder.Services.AddControllers();
