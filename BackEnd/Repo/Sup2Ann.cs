@@ -13,6 +13,6 @@ public class Sup2Ann : BaseModel
     [Column("announcement_id")]
     public int AnnouncementId { get; set; }
 
-    [Column("supplie_id")]
+    [Column("supplier_id")]
     public int SupplierId { get; set; }
 }

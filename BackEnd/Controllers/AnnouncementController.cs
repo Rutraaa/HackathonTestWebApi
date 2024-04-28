@@ -97,7 +97,12 @@ namespace BackApi.Controllers
                 Description = request.Description,
                 Status = request.Status,
                 Images = request.Images,
-                CreatedDate = DateTime.Now
+                Phone = request.Phone,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                CreatedDate = DateTime.Now,
+
             };
 
             var response = await _supaBaseClient.From<Announcement>().Insert(announcement);
