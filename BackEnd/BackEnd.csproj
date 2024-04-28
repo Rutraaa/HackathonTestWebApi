@@ -12,9 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Contracts\FileHolder\" />
     <Folder Include="DTO\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

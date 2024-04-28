@@ -1,7 +1,7 @@
 ﻿using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
-namespace BackApi.Repo;
+namespace BackEnd.Repo;
 
 [Table("consumer")]
 public class Consumer : BaseModel

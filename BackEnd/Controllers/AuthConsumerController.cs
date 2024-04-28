@@ -1,6 +1,5 @@
-using BackApi.Repo;
 using BackEnd;
-using BackEnd.Contracts;
+using BackEnd.Repo;
 using BackEnd.Contracts.Consumer;
 using BackEnd.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,16 +15,15 @@ namespace BackApi.Controllers
         private Client _supaBaseClient;
         private SupaBaseConnection _supaBaseConnection;
 
-        public AuthConsumerController(ILogger<Announcement> logger, HashService hashService,
-            Client supaBaseClient, SupaBaseConnection supaBaseConnection)
+        public AuthConsumerController(HashService hashService, Client supaBaseClient, SupaBaseConnection supaBaseConnection)
         {
             _supaBaseClient = supaBaseClient;
             _supaBaseConnection = supaBaseConnection;
             _hashService = hashService;
         }
 
-        [HttpPost("/consumer/signUp")]
-        public async Task<IActionResult> SignUp(CreatingConsumerRequest request)
+        [HttpPost("/signUp")]
+        public async Task<IActionResult> SignUp(CreatingUserRequest request)
         {
             try
             {
@@ -35,6 +33,20 @@ namespace BackApi.Controllers
                     return NotFound();
                 }
 
+                if (request.isSupplier)
+                {
+                    await _supaBaseClient.From<Supplier>().Insert(new Supplier
+                    {
+                        CreateDate = DateTime.Now,
+                        UpdateDate = DateTime.Now,
+                        FirstName = request.FirstName,
+                        LastName = request.LastName,
+                        Phone = request.Phone,
+                        Email = request.Email,
+                        Password = _hashService.GetMd5Hash(request.Password)
+                    });
+                    return Ok();
+                }
                 await _supaBaseClient.From<Consumer>().Insert(new Consumer
                 {
                     CreateDate = DateTime.Now,
@@ -55,11 +67,11 @@ namespace BackApi.Controllers
         }
 
         [HttpPost("/consumer/signIn")]
-        public async Task<IActionResult> SignIn(string email, string password)
+        public async Task<IActionResult> SignIn(SignInRequest request)
         {
             try
             {
-                var session = await _supaBaseClient.Auth.SignIn(email, password);
+                var session = await _supaBaseClient.Auth.SignIn(request.Email, request.Password);
                 if (session == null)
                 {
                     return NotFound();
