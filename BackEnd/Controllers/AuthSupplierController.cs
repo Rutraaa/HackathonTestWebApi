@@ -1,5 +1,6 @@
 using BackApi.Repo;
 using BackApi.SupaBaseContext;
+using BackEnd.Contracts.Consumer;
 using BackEnd.Contracts.Supplier;
 using BackEnd.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -54,11 +55,11 @@ namespace BackApi.Controllers
         }
 
         [HttpPost("/supplier/signIn")]
-        public async Task<IActionResult> SignIn(string email, string password)
+        public async Task<IActionResult> SignIn(SignInSupplierRequest request)
         {
             try
             {
-                var session = await _supaBaseClient.Auth.SignIn(email, password);
+                var session = await _supaBaseClient.Auth.SignIn(request.Email, request.Password);
                 if (session == null)
                 {
                     return NotFound();

@@ -51,6 +51,9 @@ namespace BackApi.Controllers
         [HttpGet("/announcements/{id}")]
         public async Task<IActionResult> GetAnnouncementById(int id)
         {
+            if (!await IsAuthorized(_supaBaseConnection.Session))
+                return Unauthorized("Not authorized user");
+
             var response = await _supaBaseClient
                 .From<Announcement>()
                 .Where(x => x.Id == id)
@@ -65,6 +68,9 @@ namespace BackApi.Controllers
         [HttpPost("/announcement/create")]
         public async Task<IActionResult> CreateAnnouncement([FromBody] CreateAnnouncementRequest request)
         {
+            if (!await IsAuthorized(_supaBaseConnection.Session))
+                return Unauthorized("Not authorized user");
+
             var announcement = new Announcement
             {
                 ConsumerId = request.ConsumerId,
@@ -78,13 +84,15 @@ namespace BackApi.Controllers
             };
 
             var response = await _supaBaseClient.From<Announcement>().Insert(announcement);
-
             return Ok();
         }
 
         [HttpPut("/announcement/update/{id}")]
         public async Task<IActionResult> UpdateAnnouncement([FromBody] UpdateAnnouncementRequest request, int id)
         {
+            if (!await IsAuthorized(_supaBaseConnection.Session))
+                return Unauthorized("Not authorized user");
+
             var model = await _supaBaseClient
                     .From<Announcement>()
                     .Where(task => task.Id == id)

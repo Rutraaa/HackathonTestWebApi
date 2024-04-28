@@ -55,11 +55,11 @@ namespace BackApi.Controllers
         }
 
         [HttpPost("/consumer/signIn")]
-        public async Task<IActionResult> SignIn(string email, string password)
+        public async Task<IActionResult> SignIn(SignInConsumerRequest request)
         {
             try
             {
-                var session = await _supaBaseClient.Auth.SignIn(email, password);
+                var session = await _supaBaseClient.Auth.SignIn(request.Email, request.Password);
                 if (session == null)
                 {
                     return NotFound();
