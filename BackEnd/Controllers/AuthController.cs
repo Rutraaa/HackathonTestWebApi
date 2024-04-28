@@ -9,13 +9,13 @@ namespace BackApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AuthConsumerController : ControllerBase
+    public class AuthController : ControllerBase
     {
         private readonly HashService _hashService;
         private Client _supaBaseClient;
         private SupaBaseConnection _supaBaseConnection;
 
-        public AuthConsumerController(HashService hashService, Client supaBaseClient, SupaBaseConnection supaBaseConnection)
+        public AuthController(HashService hashService, Client supaBaseClient, SupaBaseConnection supaBaseConnection)
         {
             _supaBaseClient = supaBaseClient;
             _supaBaseConnection = supaBaseConnection;
@@ -66,7 +66,7 @@ namespace BackApi.Controllers
             }
         }
 
-        [HttpPost("/consumer/signIn")]
+        [HttpPost("/signIn")]
         public async Task<IActionResult> SignIn(SignInRequest request)
         {
             try
@@ -85,7 +85,7 @@ namespace BackApi.Controllers
             }
         }
 
-        [HttpGet("/consumer/logout")]
+        [HttpGet("/logout")]
         public async Task<IActionResult> LogOut()
         {
             try
