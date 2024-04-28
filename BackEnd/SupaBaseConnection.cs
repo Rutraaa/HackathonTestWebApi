@@ -1,11 +1,11 @@
 ﻿using Supabase.Gotrue;
 
-namespace BackApi.SupaBaseContext;
+namespace BackEnd;
 
 public class SupaBaseConnection
 {
     public string SupaBaseUrl { get; set; }
     public string SupaBaseKey { get; set; }
-    public Session Session { get; set;}
+    public Session Session { get; set; }
 
 }

@@ -1,5 +1,5 @@
 using BackApi.Repo;
-using BackApi.SupaBaseContext;
+using BackEnd;
 using BackEnd.Contracts.Supplier;
 using BackEnd.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -28,12 +28,6 @@ namespace BackApi.Controllers
         {
             try
             {
-                var session = await _supaBaseClient.Auth.SignUp(request.Email, request.Password);
-                if (session == null)
-                {
-                    return NotFound();
-                }
-
                 await _supaBaseClient.From<Supplier>().Insert(new Supplier
                 {
                     CreateDate = DateTime.Now,
@@ -69,6 +63,21 @@ namespace BackApi.Controllers
             catch (Exception)
             {
                 return NotFound("Invalid login credentials");
+            }
+        }
+
+        [HttpGet("/supplier/logout")]
+        public async Task<IActionResult> LogOut()
+        {
+            try
+            {
+                await _supaBaseClient.Auth.SignOut();
+                _supaBaseConnection.Session = null;
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
             }
         }
     }

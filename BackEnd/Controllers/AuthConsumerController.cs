@@ -1,5 +1,5 @@
 using BackApi.Repo;
-using BackApi.SupaBaseContext;
+using BackEnd;
 using BackEnd.Contracts;
 using BackEnd.Contracts.Consumer;
 using BackEnd.Services;
@@ -70,6 +70,21 @@ namespace BackApi.Controllers
             catch (Exception)
             {
                 return NotFound("Invalid login credentials");
+            }
+        }
+
+        [HttpGet("/consumer/logout")]
+        public async Task<IActionResult> LogOut()
+        {
+            try
+            {
+                await _supaBaseClient.Auth.SignOut();
+                _supaBaseConnection.Session = null;
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
             }
         }
     }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Supabase.Gotrue;
 using Client = Supabase.Client;
-using BackApi.SupaBaseContext;
+using BackEnd;
 
 namespace BackApi.Controllers
 {

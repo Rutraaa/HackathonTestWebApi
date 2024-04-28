@@ -1,4 +1,4 @@
-using BackApi.SupaBaseContext;
+using BackEnd;
 using BackEnd.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Supabase;
