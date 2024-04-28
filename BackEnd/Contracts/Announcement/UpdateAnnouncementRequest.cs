@@ -6,8 +6,7 @@ namespace BackEnd.Contracts.Announcement
     {
         public int CategoryId { get; set; }
         public string Title { get; set; }
-        public string Subtitle { get; set; }
         public string Description { get; set; }
-        public List<string> Tags { get; set; }
+        public List<string> Images { get; set; }
     }
 }

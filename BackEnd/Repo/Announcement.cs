@@ -2,7 +2,7 @@
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
-namespace BackApi.Repo;
+namespace BackEnd.Repo;
 
 [Table("announcement")]
 public class Announcement: BaseModel
@@ -19,19 +19,26 @@ public class Announcement: BaseModel
     [Column("title")]
     public string Title { get; set; }
 
-    [Column("subtitle")]
-    public string Subtitle { get; set; }
-
     [Column("description")]
     public string Description { get; set; }
-
-    [Column("tags")]
-    public List<string> Tags { get; set; }
 
     [Column("status")]
     public AnnouncementStatus Status { get; set; }
     [Column("created_date")]
     public DateTime CreatedDate { get; set; }
 
+    [Column("images")]
+    public List<string> Images { get; set; }
 
+    [Column("phone")]
+    public string Phone { get; set; }
+
+    [Column("email")]
+    public string Email { get; set; }
+
+    [Column("first_name")]
+    public string FirstName { get; set; }
+
+    [Column("last_name")]
+    public string LastName { get; set; }
 }

@@ -1,11 +1,12 @@
-using BackApi.Repo;
+using BackEnd.Repo;
 using BackEnd.Contracts.Announcement;
 using BackEnd.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Supabase.Gotrue;
 using Client = Supabase.Client;
-using BackApi.SupaBaseContext;
+using BackEnd;
+using BackEnd.Services;
 
 namespace BackApi.Controllers
 {
@@ -13,42 +14,53 @@ namespace BackApi.Controllers
     [Route("[controller]")]
     public class AnnouncementController : ControllerBase
     {
-        private readonly ILogger<Announcement> _logger;
         private Client _supaBaseClient;
         private SupaBaseConnection _supaBaseConnection;
+        private readonly RequestFilltering _requestFilltering;
 
-        public AnnouncementController(ILogger<Announcement> logger, Client supaBaseClient, SupaBaseConnection supaBaseConnection)
+        public AnnouncementController(Client supaBaseClient, SupaBaseConnection supaBaseConnection, RequestFilltering requestFilltering)
         {
-            _logger = logger;
             _supaBaseConnection = supaBaseConnection;
             _supaBaseClient = supaBaseClient;
+            _requestFilltering = requestFilltering;
         }
 
         private async Task<bool> IsAuthorized(Session session)
         {
-            if (session != null)
+            if (_supaBaseConnection.Session != null)
             {
-                await _supaBaseClient.Auth.SetSession(session.AccessToken, session.RefreshToken, false);
+                await _supaBaseClient.Auth.SetSession(_supaBaseConnection.Session.AccessToken, _supaBaseConnection.Session.RefreshToken, false);
                 return true;
             }
             return false;
         }
 
-        [HttpGet("/list")]
-        public async Task<IActionResult> GetAnnouncementList()
+        [HttpPost("/list")]
+        public async Task<IActionResult> GetAnnouncementPaginationList([FromBody] GetAnnouncementRequest request)
         {
             if (!await IsAuthorized(_supaBaseConnection.Session))
                 return Unauthorized("Not authorized user");
-            
-            var response = await _supaBaseClient.From<Announcement>().Get();
 
-            var announcementsString = response.Content;
+            var baseQuery = await _requestFilltering.GetSearchShceme(request.CategoryId, request.SearchString, _supaBaseClient);
 
-            var announcements = JsonConvert.DeserializeObject<List<AnnouncementDTO>>(announcementsString);
-            return Ok(announcements);
+            int offset = (request.currentPage - 1) * request.pageSize;
+
+            int totalCount = baseQuery.Count;
+
+            baseQuery = baseQuery.Skip(offset).Take(offset + request.pageSize - 1).ToList();
+
+            var result = new GetAnnouncementResponse
+            {
+                items = baseQuery,
+                totalCount = totalCount,
+                pageNumber = request.currentPage,
+                pageSize = request.pageSize
+            };
+
+            return Ok(result);
         }
 
-        [HttpGet("/announcements/{id}")]
+        [HttpGet("getItem/{id}")]
         public async Task<IActionResult> GetAnnouncementById(int id)
         {
             if (!await IsAuthorized(_supaBaseConnection.Session))
@@ -60,12 +72,18 @@ namespace BackApi.Controllers
                 .Get();
 
             var announcementString = response.Content;
-            var announcement = JsonConvert.DeserializeObject<List<AnnouncementDTO>>(announcementString);
+            var announcement = JsonConvert.DeserializeObject<AnnouncementDTO>(announcementString);
+
+            var tempFirstItem = announcement.Images.First();
+
+            announcement.Images.Clear();
+
+            announcement.Images.Add(tempFirstItem);
 
             return Ok(announcement);
         }
 
-        [HttpPost("/announcement/create")]
+        [HttpPost("/create")]
         public async Task<IActionResult> CreateAnnouncement([FromBody] CreateAnnouncementRequest request)
         {
             if (!await IsAuthorized(_supaBaseConnection.Session))
@@ -76,18 +94,22 @@ namespace BackApi.Controllers
                 ConsumerId = request.ConsumerId,
                 CategoryId = request.CategoryId,
                 Title = request.Title,
-                Subtitle = request.Subtitle,
                 Description = request.Description,
                 Status = request.Status,
-                Tags = request.Tags,
-                CreatedDate = DateTime.Now
+                Images = request.Images,
+                Phone = request.Phone,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                CreatedDate = DateTime.Now,
+
             };
 
             var response = await _supaBaseClient.From<Announcement>().Insert(announcement);
             return Ok();
         }
 
-        [HttpPut("/announcement/update/{id}")]
+        [HttpPut("/update/{id}")]
         public async Task<IActionResult> UpdateAnnouncement([FromBody] UpdateAnnouncementRequest request, int id)
         {
             if (!await IsAuthorized(_supaBaseConnection.Session))
@@ -100,9 +122,8 @@ namespace BackApi.Controllers
 
             model.CategoryId = request.CategoryId;
             model.Title = request.Title;
-            model.Subtitle = request.Subtitle;
+            model.Images = request.Images;
             model.Description = request.Description;
-            model.Tags = request.Tags;
 
             await model.Update<Announcement>();
 

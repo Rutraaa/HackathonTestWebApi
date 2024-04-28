@@ -1,7 +1,7 @@
 ﻿using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
-namespace BackApi.Repo;
+namespace BackEnd.Repo;
 
 [Table("supp2annnoun")]
 public class Sup2Ann : BaseModel
@@ -13,6 +13,6 @@ public class Sup2Ann : BaseModel
     [Column("announcement_id")]
     public int AnnouncementId { get; set; }
 
-    [Column("supplie_id")]
+    [Column("supplier_id")]
     public int SupplierId { get; set; }
 }

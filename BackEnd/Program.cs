@@ -1,7 +1,5 @@
-using BackApi.SupaBaseContext;
 using BackEnd;
 using BackEnd.Services;
-using Microsoft.Extensions.DependencyInjection;
 using Supabase;
 using Client = Supabase.Client;
 
@@ -33,6 +31,7 @@ builder.Services.AddScoped(_ => new Client(supaBase.SupaBaseUrl, supaBase.SupaBa
 
 
 builder.Services.AddSingleton<HashService>();
+builder.Services.AddSingleton<RequestFilltering>();
 
 // Add services to the container
 builder.Services.AddControllers();
