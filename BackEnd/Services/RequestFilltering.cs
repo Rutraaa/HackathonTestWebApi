@@ -11,7 +11,7 @@ namespace BackEnd.Services
         {
             var announcementsString = (await supabaseClient.From<Announcement>().Get()).Content;
             var basequery = JsonConvert.DeserializeObject<List<AnnouncementDTO>>(announcementsString);
-            basequery = CategoryId != 0 ? basequery : basequery.Where(x => x.CategoryId == CategoryId).ToList();
+            basequery = CategoryId == 0 ? basequery : basequery.Where(x => x.CategoryId == CategoryId).ToList();
             basequery = basequery.Where(item => item.Title.Contains(SearchString)).ToList();
 
             return basequery;
