@@ -47,7 +47,7 @@ namespace BackApi.Controllers
 
             int totalCount = baseQuery.Count;
 
-            baseQuery = baseQuery.Skip(offset).Take(offset + request.pageSize - 1).ToList();
+            baseQuery = baseQuery.Skip(offset).Take(request.pageSize).ToList();
 
             var result = new GetAnnouncementResponse
             {
@@ -66,21 +66,33 @@ namespace BackApi.Controllers
             if (!await IsAuthorized(_supaBaseConnection.Session))
                 return Unauthorized("Not authorized user");
 
-            var response = await _supaBaseClient
+            var announcement = await _supaBaseClient
                 .From<Announcement>()
                 .Where(x => x.Id == id)
-                .Get();
+                .Single();
 
-            var announcementString = response.Content;
-            var announcement = JsonConvert.DeserializeObject<AnnouncementDTO>(announcementString);
+            if (announcement == null)
+            {
+                return NotFound(); 
+            }
 
-            var tempFirstItem = announcement.Images.First();
+            var pes = new AnnouncementDTO
+            {
+                Id = announcement.Id,
+                ConsumerId = announcement.ConsumerId,
+                CategoryId = announcement.CategoryId,
+                Title = announcement.Title,
+                Description = announcement.Description,
+                Images = announcement.Images,
+                Status = announcement.Status,
+                CreatedDate = announcement.CreatedDate,
+                Phone = announcement.Phone,
+                Email = announcement.Email,
+                FirstName = announcement.FirstName,
+                LastName = announcement.LastName
+            };
 
-            announcement.Images.Clear();
-
-            announcement.Images.Add(tempFirstItem);
-
-            return Ok(announcement);
+            return Ok(pes);
         }
 
         [HttpPost("/create")]
@@ -88,6 +100,9 @@ namespace BackApi.Controllers
         {
             if (!await IsAuthorized(_supaBaseConnection.Session))
                 return Unauthorized("Not authorized user");
+
+            var user = await _supaBaseClient.From<Consumer>().Where(item => item.Id == request.ConsumerId).Single();
+
 
             var announcement = new Announcement
             {
@@ -97,14 +112,14 @@ namespace BackApi.Controllers
                 Description = request.Description,
                 Status = request.Status,
                 Images = request.Images,
-                Phone = request.Phone,
-                Email = request.Email,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
+                Phone = user.Phone,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 CreatedDate = DateTime.Now,
 
             };
-
+                
             var response = await _supaBaseClient.From<Announcement>().Insert(announcement);
             return Ok();
         }
